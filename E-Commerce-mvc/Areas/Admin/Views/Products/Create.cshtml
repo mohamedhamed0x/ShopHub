@@ -1,0 +1,80 @@
+@model ProductFormVM
+@{
+    ViewData["Title"] = Model.Id == 0 ? "Create Product" : "Edit Product";
+}
+
+<h2 class="fw-bold mb-4">@ViewData["Title"]</h2>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="@(Model.Id == 0 ? "Create" : "Edit")" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="ImageUrl" />
+
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <label asp-for="Name" class="form-label fw-medium"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="CategoryId" class="form-label fw-medium"></label>
+                    <select asp-for="CategoryId" asp-items="@(new SelectList(Model.Categories, "Id", "Name"))" class="form-select">
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger small"></span>
+                </div>
+                <div class="col-12">
+                    <label asp-for="Description" class="form-label fw-medium"></label>
+                    <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Price" class="form-label fw-medium"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Price" class="form-control" />
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="DiscountPrice" class="form-label fw-medium"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="DiscountPrice" class="form-control" />
+                    </div>
+                    <span asp-validation-for="DiscountPrice" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="StockQuantity" class="form-label fw-medium"></label>
+                    <input asp-for="StockQuantity" class="form-control" />
+                    <span asp-validation-for="StockQuantity" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="ImageFile" class="form-label fw-medium"></label>
+                    <input asp-for="ImageFile" class="form-control" />
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <div class="mt-2">
+                            <img src="@Model.ImageUrl" alt="Current image" class="rounded" style="height:80px;">
+                            <small class="text-muted d-block">Current image</small>
+                        </div>
+                    }
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <div class="form-check">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Active</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-1"></i>Save Product</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>

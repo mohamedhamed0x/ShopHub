@@ -1,0 +1,93 @@
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Manage Products";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Products</h2>
+    <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Add Product</a>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @if (product.ImageUrl != null)
+                                    {
+                                        <img src="@product.ImageUrl" alt="@product.Name" class="rounded me-3" style="width:45px;height:45px;object-fit:cover;">
+                                    }
+                                    else
+                                    {
+                                        <div class="rounded me-3 bg-light d-flex align-items-center justify-content-center" style="width:45px;height:45px;">
+                                            <i class="bi bi-image text-muted"></i>
+                                        </div>
+                                    }
+                                    <span class="fw-medium">@product.Name</span>
+                                </div>
+                            </td>
+                            <td>@product.Category?.Name</td>
+                            <td>
+                                @if (product.DiscountPrice.HasValue)
+                                {
+                                    <span class="fw-semibold">$@product.DiscountPrice.Value.ToString("N2")</span>
+                                    <br><small class="text-muted text-decoration-line-through">$@product.Price.ToString("N2")</small>
+                                }
+                                else
+                                {
+                                    <span class="fw-semibold">$@product.Price.ToString("N2")</span>
+                                }
+                            </td>
+                            <td>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-success">@product.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                }
+                            </td>
+                            <td>
+                                @if (product.IsActive)
+                                {
+                                    <span class="badge bg-success">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">Inactive</span>
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@product.Id" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-warning" title="Toggle Status">
+                                        <i class="bi bi-toggle-on"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

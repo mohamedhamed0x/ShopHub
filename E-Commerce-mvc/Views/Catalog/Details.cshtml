@@ -1,0 +1,102 @@
+@model ProductDetailsVM
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<div class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Catalog" asp-action="Index">Shop</a></li>
+            <li class="breadcrumb-item">
+                <a asp-controller="Catalog" asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.CategoryName</a>
+            </li>
+            <li class="breadcrumb-item active">@Model.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <div class="position-relative">
+                @if (Model.ImageUrl != null)
+                {
+                    <img src="@Model.ImageUrl" class="img-fluid rounded-3 w-100" alt="@Model.Name" style="max-height: 500px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="img-placeholder rounded-3" style="height:400px;">
+                        <i class="bi bi-image"></i>
+                    </div>
+                }
+                @if (Model.HasDiscount)
+                {
+                    <span class="discount-badge" style="font-size:1rem; padding:6px 14px;">-@Model.DiscountPercentage% OFF</span>
+                }
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-md-6">
+            <span class="category-badge mb-3 d-inline-block">@Model.CategoryName</span>
+            <h1 class="fw-bold mb-3">@Model.Name</h1>
+
+            <div class="mb-3">
+                @if (Model.HasDiscount)
+                {
+                    <span class="fs-2 fw-bold" style="color: var(--primary-dark);">$@Model.DiscountPrice!.Value.ToString("N2")</span>
+                    <span class="original-price fs-5 ms-2">$@Model.Price.ToString("N2")</span>
+                    <span class="badge bg-danger ms-2">Save $@((Model.Price - Model.DiscountPrice.Value).ToString("N2"))</span>
+                }
+                else
+                {
+                    <span class="fs-2 fw-bold" style="color: var(--primary-dark);">$@Model.Price.ToString("N2")</span>
+                }
+            </div>
+
+            <!-- Stock Status -->
+            <div class="mb-3">
+                @if (Model.IsInStock)
+                {
+                    <span class="badge bg-success fs-6"><i class="bi bi-check-circle me-1"></i>In Stock (@Model.StockQuantity available)</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger fs-6"><i class="bi bi-x-circle me-1"></i>Out of Stock</span>
+                }
+            </div>
+
+            <!-- Description -->
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div class="mb-4">
+                    <h5 class="fw-semibold">Description</h5>
+                    <p class="text-muted">@Model.Description</p>
+                </div>
+            }
+
+            <!-- Add to Cart -->
+            @if (Model.IsInStock)
+            {
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <label class="fw-medium">Quantity:</label>
+                        <input type="number" name="quantity" value="1" min="1" max="@Model.StockQuantity" class="form-control qty-input" />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg px-5">
+                        <i class="bi bi-cart-plus me-2"></i>Add to Cart
+                    </button>
+                </form>
+            }
+            else
+            {
+                <button class="btn btn-secondary btn-lg px-5" disabled>
+                    <i class="bi bi-cart-x me-2"></i>Out of Stock
+                </button>
+            }
+        </div>
+    </div>
+</div>

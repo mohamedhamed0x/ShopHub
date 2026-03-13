@@ -1,0 +1,57 @@
+@model IEnumerable<Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+    var currentStatus = ViewBag.CurrentStatus as OrderStatus?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Orders</h2>
+</div>
+
+<!-- Status Filter -->
+<div class="mb-4">
+    <div class="btn-group" role="group">
+        <a asp-action="Index" class="btn @(currentStatus == null ? "btn-primary" : "btn-outline-primary") btn-sm">All</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Pending" class="btn @(currentStatus == OrderStatus.Pending ? "btn-primary" : "btn-outline-primary") btn-sm">Pending</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Processing" class="btn @(currentStatus == OrderStatus.Processing ? "btn-primary" : "btn-outline-primary") btn-sm">Processing</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Shipped" class="btn @(currentStatus == OrderStatus.Shipped ? "btn-primary" : "btn-outline-primary") btn-sm">Shipped</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Delivered" class="btn @(currentStatus == OrderStatus.Delivered ? "btn-primary" : "btn-outline-primary") btn-sm">Delivered</a>
+        <a asp-action="Index" asp-route-status="@OrderStatus.Cancelled" class="btn @(currentStatus == OrderStatus.Cancelled ? "btn-primary" : "btn-outline-primary") btn-sm">Cancelled</a>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td class="fw-medium">#@order.Id</td>
+                            <td>@order.User?.FirstName @order.User?.LastName</td>
+                            <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                            <td>@order.OrderItems.Count</td>
+                            <td class="fw-semibold">$@order.TotalAmount.ToString("N2")</td>
+                            <td><span class="status-badge status-@order.Status.ToString().ToLower()">@order.Status</span></td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

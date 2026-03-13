@@ -1,0 +1,104 @@
+@{
+    ViewData["Title"] = "Home";
+    var categories = ViewBag.Categories as IEnumerable<Category>;
+    var products = ViewBag.FeaturedProducts as IEnumerable<Product>;
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <h1>Discover Premium Products</h1>
+                <p class="lead mb-4">Shop the latest trends with unbeatable prices and fast delivery.</p>
+                <a asp-controller="Catalog" asp-action="Index" class="btn btn-light btn-lg px-4 me-2">
+                    <i class="bi bi-bag me-2"></i>Shop Now
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+@if (categories != null && categories.Any())
+{
+    <section class="py-5">
+        <div class="container">
+            <h2 class="section-title mb-4">Browse Categories</h2>
+            <div class="row g-3 mt-3">
+                @foreach (var cat in categories)
+                {
+                    <div class="col-6 col-md-4 col-lg">
+                        <a asp-controller="Catalog" asp-action="Index" asp-route-categoryId="@cat.Id" class="text-decoration-none">
+                            <div class="category-card">
+                                <i class="bi bi-grid-3x3-gap-fill"></i>
+                                <h6 class="mb-0">@cat.Name</h6>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Featured Products -->
+@if (products != null && products.Any())
+{
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title">New Arrivals</h2>
+                <a asp-controller="Catalog" asp-action="Index" class="btn btn-outline-primary">View All <i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
+            <div class="row g-4 mt-2">
+                @foreach (var product in products)
+                {
+                    <div class="col-sm-6 col-lg-3">
+                        <div class="card product-card">
+                            <div class="position-relative">
+                                @if (product.ImageUrl != null)
+                                {
+                                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
+                                }
+                                else
+                                {
+                                    <div class="card-img-top img-placeholder" style="height:220px;">
+                                        <i class="bi bi-image"></i>
+                                    </div>
+                                }
+                                @if (product.DiscountPrice.HasValue && product.DiscountPrice < product.Price)
+                                {
+                                    var pct = (int)Math.Round((1 - (product.DiscountPrice.Value / product.Price)) * 100);
+                                    <span class="discount-badge">-@pct%</span>
+                                }
+                                @if (product.StockQuantity <= 0)
+                                {
+                                    <span class="out-of-stock-badge">Out of Stock</span>
+                                }
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <span class="category-badge mb-2">@product.Category?.Name</span>
+                                <h6 class="card-title mb-2">@product.Name</h6>
+                                <div class="mt-auto">
+                                    @if (product.DiscountPrice.HasValue && product.DiscountPrice < product.Price)
+                                    {
+                                        <span class="price">$@product.DiscountPrice.Value.ToString("N2")</span>
+                                        <span class="original-price ms-2">$@product.Price.ToString("N2")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="price">$@product.Price.ToString("N2")</span>
+                                    }
+                                </div>
+                                <a asp-controller="Catalog" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary btn-sm mt-3">
+                                    View Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}

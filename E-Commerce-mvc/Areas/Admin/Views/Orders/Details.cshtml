@@ -1,0 +1,81 @@
+@model OrderDetailsVM
+@{
+    ViewData["Title"] = $"Order #{Model.OrderId}";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Order #@Model.OrderId</h2>
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to Orders</a>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <!-- Order Items -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3">Order Items</h5>
+                @foreach (var item in Model.Items)
+                {
+                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                        <div class="d-flex align-items-center">
+                            @if (item.ImageUrl != null)
+                            {
+                                <img src="@item.ImageUrl" class="cart-item-img me-3" alt="@item.ProductName">
+                            }
+                            <div>
+                                <span class="fw-medium">@item.ProductName</span>
+                                <br><small class="text-muted">Qty: @item.Quantity × $@item.UnitPrice.ToString("N2")</small>
+                            </div>
+                        </div>
+                        <span class="fw-semibold">$@item.Subtotal.ToString("N2")</span>
+                    </div>
+                }
+                <div class="d-flex justify-content-between mt-3">
+                    <span class="fw-bold fs-5">Total</span>
+                    <span class="fw-bold fs-5" style="color: var(--primary-dark);">$@Model.TotalAmount.ToString("N2")</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Customer Info -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-person me-2"></i>Customer</h5>
+                <p class="mb-1 fw-medium">@Model.CustomerName</p>
+                <p class="mb-0 text-muted">@Model.CustomerEmail</p>
+            </div>
+        </div>
+
+        <!-- Shipping Address -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-geo-alt me-2"></i>Shipping Address</h5>
+                <p class="mb-1 fw-medium">@Model.ShippingAddress.FullName</p>
+                <p class="mb-1 text-muted">@Model.ShippingAddress.Street</p>
+                <p class="mb-1 text-muted">@Model.ShippingAddress.City, @Model.ShippingAddress.State @Model.ShippingAddress.ZipCode</p>
+                <p class="mb-0 text-muted">@Model.ShippingAddress.Country</p>
+            </div>
+        </div>
+
+        <!-- Update Status -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body p-4">
+                <h5 class="fw-bold mb-3"><i class="bi bi-arrow-repeat me-2"></i>Update Status</h5>
+                <p class="mb-2">Current: <span class="status-badge status-@Model.Status.ToString().ToLower()">@Model.Status</span></p>
+                <form asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+                    <select name="newStatus" class="form-select form-select-sm mb-2">
+                        @foreach (OrderStatus status in Enum.GetValues(typeof(OrderStatus)))
+                        {
+                            <option value="@status" selected="@(status == Model.Status)">@status</option>
+                        }
+                    </select>
+                    <button type="submit" class="btn btn-primary btn-sm w-100">Update Status</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

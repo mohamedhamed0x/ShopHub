@@ -1,0 +1,83 @@
+@model DashboardVM
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2 class="fw-bold mb-4">Dashboard</h2>
+
+<!-- Stats Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #6366f1, #818cf8);">
+            <i class="bi bi-receipt stat-icon"></i>
+            <div class="stat-label">Total Orders</div>
+            <h3>@Model.TotalOrders</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #10b981, #34d399);">
+            <i class="bi bi-currency-dollar stat-icon"></i>
+            <div class="stat-label">Total Revenue</div>
+            <h3>$@Model.TotalRevenue.ToString("N2")</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f59e0b, #fbbf24);">
+            <i class="bi bi-box-seam stat-icon"></i>
+            <div class="stat-label">Products</div>
+            <h3>@Model.TotalProducts</h3>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #ef4444, #f87171);">
+            <i class="bi bi-clock stat-icon"></i>
+            <div class="stat-label">Pending Orders</div>
+            <h3>@Model.PendingOrders</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="card border-0 shadow-sm">
+    <div class="card-header bg-white border-0 p-4">
+        <h5 class="fw-bold mb-0">Recent Orders</h5>
+    </div>
+    <div class="card-body p-0">
+        @if (Model.RecentOrders.Any())
+        {
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model.RecentOrders)
+                        {
+                            <tr>
+                                <td class="fw-medium">#@order.OrderId</td>
+                                <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                <td>@order.ItemCount item(s)</td>
+                                <td class="fw-semibold">$@order.TotalAmount.ToString("N2")</td>
+                                <td><span class="status-badge status-@order.Status.ToString().ToLower()">@order.Status</span></td>
+                                <td>
+                                    <a asp-area="Admin" asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId" class="btn btn-sm btn-outline-primary">View</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted text-center py-4">No orders yet.</p>
+        }
+    </div>
+</div>
